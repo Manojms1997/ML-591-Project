@@ -6,3 +6,8 @@ Automatic COVID-19 detection from X-ray images using ensemble learning with conv
 Kaggle dataset : https://www.kaggle.com/datasets/fanbyprinciple/luna-lung-cancer-dataset
 
 CUIEMCovidProject/COVID-19-Detection-Using-Ensemble-Learning: https://github.com/CUIEMCOVIDProject/COVID-19-Detection-Using-Ensemble-Learning
+
+
+### VGG-19
+
+https://www.quora.com/What-is-the-VGG-19-neural-network
