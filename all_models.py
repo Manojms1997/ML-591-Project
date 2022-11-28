@@ -13,7 +13,7 @@ drive.mount('/content/drive')
 import matplotlib.pyplot as plt
 import pandas as pd
 import tensorflow as tf 
-from tensorflow.keras.applications import VGG19, ResNet50V2, DenseNet201, InceptionResNetV2, InceptionV3, Xception, MobileNetV2
+from tensorflow.keras.applications import ResNet50V2, DenseNet201, InceptionResNetV2, InceptionV3, Xception, MobileNetV2
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import LearningRateScheduler, EarlyStopping
 
@@ -36,9 +36,6 @@ def train_model(path, train_images=None, train_labels = None,
     '''
 
     base_model = None
-    if model_name == 'vgg19':        
-        base_model = VGG19(weights = None, include_top = False, input_shape = input_shape)
-     
     if model_name == 'resnet50_v2':
         base_model = ResNet50V2(weights = None, include_top = False, input_shape = input_shape)
              
@@ -168,7 +165,6 @@ y_test_path = '/content/drive/MyDrive/MLFPGA/MLFPGA_Proj/DATA/OUTPUT_DIR/New_tes
 inception_path = '/content/drive/MyDrive/MLFPGA/MLFPGA_Proj/Model_Data_all_models/inception_v3.h5'
 resnet_path = '/content/drive/MyDrive/MLFPGA/MLFPGA_Proj/Model_Data_all_models/resnet50_v2.h5'
 densenet_path = '/content/drive/MyDrive/MLFPGA/MLFPGA_Proj/Model_Data_all_models/densenet201.h5'
-vgg19_path = '/content/drive/MyDrive/MLFPGA/MLFPGA_Proj/Model_Data_all_models/vgg19.h5'
 mobilenet_path = '/content/drive/MyDrive/MLFPGA/MLFPGA_Proj/Model_Data_all_models/mobilenet_v2.h5'
 xception_path = '/content/drive/MyDrive/MLFPGA/MLFPGA_Proj/Model_Data_all_models/xception.h5'
 
@@ -180,7 +176,6 @@ image_size = 224
 inception_model = tf.keras.models.load_model(inception_path)
 resnet_model = tf.keras.models.load_model(resnet_path)
 densenet_model = tf.keras.models.load_model(densenet_path)
-vgg19_model = tf.keras.models.load_model(vgg19_path)
 xception_model = tf.keras.models.load_model(xception_path)
 mobilenet_model = tf.keras.models.load_model(mobilenet_path)
 
