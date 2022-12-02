@@ -7,22 +7,19 @@ Original file is located at
     https://colab.research.google.com/drive/191mDECuGhjFj5jAnOWSVukJRgtVP1VwM
 """
 
-from google.colab import drive
-drive.mount('/content/drive')
+import matplotlib.pyplot as plt                                                     # package to plot accuracy and loss graphs
+import pandas as pd                                                                 # package for dataframe
+import tensorflow as tf                                                             # ML alogorithms package
+from tensorflow.keras.applications import ResNet50V2, DenseNet201, InceptionResNetV2, InceptionV3, Xception, MobileNetV2  # ML algorithms
+from tensorflow.keras.optimizers import Adam                                        # optimizer package
+from tensorflow.keras.callbacks import LearningRateScheduler, EarlyStopping         # callbacks package
 
-import matplotlib.pyplot as plt
-import pandas as pd
-import tensorflow as tf 
-from tensorflow.keras.applications import ResNet50V2, DenseNet201, InceptionResNetV2, InceptionV3, Xception, MobileNetV2
-from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.callbacks import LearningRateScheduler, EarlyStopping
-
-def train_model(path, train_images=None, train_labels = None, 
+def train_model(path, train_images=None, train_labels = None,                       
                 test_images = None, test_labels = None, 
                 model_name = None, epochs =50, learning_rate = 0.0001,
                 input_shape = (224,224,3), classes=2, batch_size = 16, 
                 classifier_activation='softmax',
-                callbacks = None):
+                callbacks = None):                                                  # method for training each models 
     '''    
     saves the model as .h5 file\n  
     path = directory for saving the files
@@ -36,45 +33,45 @@ def train_model(path, train_images=None, train_labels = None,
     '''
 
     base_model = None
-    if model_name == 'resnet50_v2':
+    if model_name == 'resnet50_v2':                                                 # if selected model is resnet50_v2
         base_model = ResNet50V2(weights = None, include_top = False, input_shape = input_shape)
              
-    if model_name == 'inception_resnet_v2':        
+    if model_name == 'inception_resnet_v2':                                         # if selected model is inception_resnet_v2 
         base_model = InceptionResNetV2(weights = None, include_top = False, input_shape = input_shape)
     
-    if model_name == 'densenet201':        
+    if model_name == 'densenet201':                                                 # if selected model is densenet201      
         base_model = DenseNet201(weights = None, include_top = False, input_shape = input_shape)
           
-    if model_name == 'inception_v3':        
+    if model_name == 'inception_v3':                                                # if selected model is inception_v3
         base_model = InceptionV3(weights = None, include_top = False, input_shape = input_shape)
         
-    if model_name == 'xception':        
+    if model_name == 'xception':                                                    # if selected model is xception     
         base_model = Xception(weights = None, include_top = False, input_shape = input_shape)
         
-    if model_name == 'mobilenet_v2':        
+    if model_name == 'mobilenet_v2':                                                # if selected model is mobilenet_v2  
         base_model = MobileNetV2(weights = None, include_top = False, input_shape = input_shape)
 
-    x = base_model.output         
-    x = tf.keras.layers.GlobalAveragePooling2D()(x)
+    x = base_model.output                                                           # store model output
+    x = tf.keras.layers.GlobalAveragePooling2D()(x)                                 # set pooling layer
     output = tf.keras.layers.Dense(classes, activation=classifier_activation)(x)
 
-    model = tf.keras.Model(inputs = base_model.input, outputs = output)
+    model = tf.keras.Model(inputs = base_model.input, outputs = output)             # Initialize model
 
-    optimizer = Adam(learning_rate = learning_rate, beta_1=0.9, beta_2=0.999, epsilon=1e-07)
+    optimizer = Adam(learning_rate = learning_rate, beta_1=0.9, beta_2=0.999, epsilon=1e-07)    # initialize optimizer
 
-    model.compile(optimizer = optimizer,
+    model.compile(optimizer = optimizer,                                            # compile model
                   loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
                   metrics = ['accuracy'])
         
-    results = model.fit(train_images, train_labels, epochs = epochs,
+    results = model.fit(train_images, train_labels, epochs = epochs,                # train model
                         validation_data = (test_images, test_labels), 
                         batch_size=batch_size, 
                         callbacks = callbacks
                         )
     
-    loss = pd.DataFrame(model.history.history['loss'])
+    loss = pd.DataFrame(model.history.history['loss'])                              # get model loss 
     val_loss = pd.DataFrame(model.history.history['val_loss'])
-    plt.plot(loss)
+    plt.plot(loss)                                                                  # plot loss graphs
     plt.plot(val_loss)
     plt.ylabel('loss')
     plt.xlabel('epoch')
@@ -82,7 +79,7 @@ def train_model(path, train_images=None, train_labels = None,
     plt.savefig(path+model_name+'_loss.png')
     plt.show()
 
-    acc = pd.DataFrame(model.history.history['accuracy'])
+    acc = pd.DataFrame(model.history.history['accuracy'])                           # plot accuracy plots
     val_acc = pd.DataFrame(model.history.history['val_accuracy'])
     plt.plot(acc)
     plt.plot(val_acc)
@@ -93,30 +90,26 @@ def train_model(path, train_images=None, train_labels = None,
     plt.savefig(path+model_name+'_acc.png')
     plt.show()
 
-    save_model = path + model_name + '.h5'
+    save_model = path + model_name + '.h5'                                          # save model on disk
     model.save(save_model)
     
     return results
 
-import numpy as np
+import numpy as np                  
 import tensorflow as tf
 #from Model import *
-classes = ["LUNG_CANCER","NOT_LUNG_CANCER"]
-image_size = 224
+classes = ["LUNG_CANCER","NOT_LUNG_CANCER"]                                         # classes 
+image_size = 224                                                                    # size of image 
 
-#x_train_path = input("Enter path to train images: ")
-#y_train_path = input("Enter path to train labels: ")
-#x_test_path = input("Enter path to test images: ")
-#y_test_path = input("Enter path to test labels: ")
-#path = input("Enter path to save the model: ")  #path to save the model
+# train and test image paths
 train_image_path = "/content/drive/MyDrive/MLFPGA/MLFPGA_Proj/DATA/OUTPUT_DIR/New_train_images.npy"
 train_labels_path = "/content/drive/MyDrive/MLFPGA/MLFPGA_Proj/DATA/OUTPUT_DIR/New_train_labels.npy"
 test_image_path = "/content/drive/MyDrive/MLFPGA/MLFPGA_Proj/DATA/OUTPUT_DIR/New_test_images.npy"
 test_labels_path = "/content/drive/MyDrive/MLFPGA/MLFPGA_Proj/DATA/OUTPUT_DIR/New_test_labels.npy"
 
-path = "/content/drive/MyDrive/MLFPGA/MLFPGA_Proj/Model_Data_all_models/"
-
-x_train = np.load(train_image_path)
+path = "/content/drive/MyDrive/MLFPGA/MLFPGA_Proj/Model_Data_all_models/"          
+# load images
+x_train = np.load(train_image_path)     
 
 x_train.shape
 
@@ -131,29 +124,29 @@ y_test = np.load(test_labels_path)
 
 #callbacks = [early_stop]
 
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split                                # split into test and validation set
 x_train_train, x_train_val, y_train_train, y_train_val = train_test_split(x_train, y_train, test_size=0.20, random_state=1)
 
 print(f"Sizes: {x_train_train.shape}, {x_train_val.shape}")
-
+# train mobile net
 mobilenet_v2 = train_model(path,x_train_train, y_train_train,x_train_val,y_train_val,model_name ='mobilenet_v2',epochs=epochs,input_shape=(image_size,image_size,3),classes = len(classes))
-
+# train xception
 xception = train_model(path, x_train_train, y_train_train,
                      x_train_val, y_train_val, model_name="xception",
                      epochs=epochs, input_shape = (image_size,image_size,3),
                      classes = len(classes))
-
+# train densenet
 densenet = train_model(path, x_train_train, y_train_train,
                        x_train_val, y_train_val, model_name="densenet201",
                        epochs=epochs, input_shape = (image_size,image_size,3),
                        classes = len(classes))
-
+# train resnet
 resnet = train_model(path, x_train_train, y_train_train,
                      x_train_val, y_train_val, model_name="resnet50_v2",
                      epochs=epochs, input_shape = (image_size,image_size,3),
                      classes = len(classes))
 #callbacks = callbacks
-
+# train inception
 inception_v3 = train_model(path, x_train_train, y_train_train,
                      x_train_val, y_train_val, model_name="inception_v3",
                      epochs=epochs, input_shape = (image_size,image_size,3),
@@ -167,12 +160,11 @@ resnet_path = '/content/drive/MyDrive/MLFPGA/MLFPGA_Proj/Model_Data_all_models/r
 densenet_path = '/content/drive/MyDrive/MLFPGA/MLFPGA_Proj/Model_Data_all_models/densenet201.h5'
 mobilenet_path = '/content/drive/MyDrive/MLFPGA/MLFPGA_Proj/Model_Data_all_models/mobilenet_v2.h5'
 xception_path = '/content/drive/MyDrive/MLFPGA/MLFPGA_Proj/Model_Data_all_models/xception.h5'
-
+# load test images
 x_test = np.load(x_test_path)
 y_test = np.load(y_test_path)
 
-image_size = 224
-
+# load idividual models for test accuracy calculation
 inception_model = tf.keras.models.load_model(inception_path)
 resnet_model = tf.keras.models.load_model(resnet_path)
 densenet_model = tf.keras.models.load_model(densenet_path)
@@ -180,7 +172,7 @@ xception_model = tf.keras.models.load_model(xception_path)
 mobilenet_model = tf.keras.models.load_model(mobilenet_path)
 
 models = [densenet_model,resnet_model,mobilenet_model,xception_model, inception_model]
-
+# calculate test accuracy of each model
 for model in models:
     model_eval = model.evaluate(x_test, y_test)
     print(model, model_eval)
